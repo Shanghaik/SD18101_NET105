@@ -17,7 +17,7 @@ namespace AppProgram_MVC.Controllers
             // Để call được API thì chúng ta cần lấy được URL request
             string requestURL = "https://localhost:44370/api/Sinhviens";
             var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(requestURL); // rấy response
+            var response = await httpClient.GetAsync(requestURL); // lấy response
             // Đọc từ response chuỗi Json là kết quả của phép trả về
             string apiData = await response.Content.ReadAsStringAsync();
             // Có data rồi thì ta sẽ convert về dữ liệu mình cần để đưa sang view
@@ -46,9 +46,17 @@ namespace AppProgram_MVC.Controllers
          */
 
         // GET: SinhvienController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(Guid id)
         {
-            return View();
+            string requestURL =
+                $"https://localhost:44370/api/Sinhviens/get-by-id?id={id}";
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(requestURL); // lấy response
+            // Đọc từ response chuỗi Json là kết quả của phép trả về
+            string apiData = await response.Content.ReadAsStringAsync();
+            // Có data rồi thì ta sẽ convert về dữ liệu mình cần để đưa sang view
+            var sinhviens = JsonConvert.DeserializeObject<Sinhvien>(apiData);
+            return View(sinhviens);
         }
 
         // GET: SinhvienController/Create

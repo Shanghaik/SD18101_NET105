@@ -11,7 +11,7 @@ namespace SD18101_AppAPIs.Controllers
     {
         public AppDbContext context = new AppDbContext();
         // GET: api/<SinhviensController>
-        [HttpGet]
+        [HttpGet("get-all")]
         public IEnumerable<Sinhvien> GetAll()
         {
             return context.sinhviens.ToList();
@@ -26,7 +26,7 @@ namespace SD18101_AppAPIs.Controllers
         [HttpGet("get-by-name")]
         public IEnumerable<Sinhvien> GetByName(string name)
         {
-            return context.sinhviens.Where(p=>p.Name.Contains(name)).ToList(); 
+            return context.sinhviens.Where(p => p.Name.Contains(name)).ToList();
         }
 
         // POST api/<SinhviensController>
@@ -36,7 +36,7 @@ namespace SD18101_AppAPIs.Controllers
             try
             {
                 context.sinhviens.Add(sinhvien);
-                context.SaveChanges(); 
+                context.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -44,18 +44,24 @@ namespace SD18101_AppAPIs.Controllers
                 return false;
             }
         }
-        [HttpPost("post-by-params")]
-        public bool PostByParams(string Name, string Description, string Email, 
+        [HttpGet("post-by-params")]
+        public bool PostByParams(string Name, string Description, string Email,
             string PhoneNumber, DateTime DoB, string Address, int Major)
         {
             Guid id = Guid.NewGuid();
             Sinhvien sinhvien = new Sinhvien
             {
-                Id = id, Name = Name, Description = Description,
-                Email = Email, PhoneNumber = PhoneNumber, DoB = DoB,
-                Address = Address, Major = Major
+                Id = id,
+                Name = Name,
+                Description = Description,
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+                DoB = DateTime.Now,
+                Address = Address,
+                Major = Major
             };
-            try{
+            try
+            {
                 context.sinhviens.Add(sinhvien);
                 context.SaveChanges();
                 return true;
@@ -70,7 +76,7 @@ namespace SD18101_AppAPIs.Controllers
         [HttpPut("put-by-obj")]
         public bool PutByObj([FromBody] Sinhvien sinhvien)
         {
-            Sinhvien sinhvienfrDb = context.sinhviens.Find(sinhvien.Id);         
+            Sinhvien sinhvienfrDb = context.sinhviens.Find(sinhvien.Id);
             try
             {
                 sinhvienfrDb.Name = sinhvien.Name; // Nhớ là phải gán lại
@@ -85,7 +91,7 @@ namespace SD18101_AppAPIs.Controllers
         }
 
         // DELETE api/<SinhviensController>/5
-        [HttpDelete("{id}")]
+        [HttpGet("{id}")]
         public bool Delete(Guid id)
         {
             try
@@ -97,7 +103,7 @@ namespace SD18101_AppAPIs.Controllers
             }
             catch (Exception)
             {
-                return false;       
+                return false;
             }
         }
     }

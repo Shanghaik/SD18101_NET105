@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Protocol.Plugins;
+using System.Net.Http.Headers;
 
 namespace AppProgram_MVC.Controllers
 {
@@ -12,10 +14,10 @@ namespace AppProgram_MVC.Controllers
 
         }
         // GET: SinhvienController
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index() // Lấy tất cả danh sách Sinhvien
         {
             // Để call được API thì chúng ta cần lấy được URL request
-            string requestURL = "https://localhost:44370/api/Sinhviens";
+            string requestURL = "https://localhost:44370/api/Sinhviens/get-all";
             var httpClient = new HttpClient();
             var response = await httpClient.GetAsync(requestURL); // lấy response
             // Đọc từ response chuỗi Json là kết quả của phép trả về
@@ -67,16 +69,43 @@ namespace AppProgram_MVC.Controllers
 
         // POST: SinhvienController/Create
         [HttpPost]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(Sinhvien sv)
         {
-            try
+            // Cách dùng obj
+            string requestURL =
+                $"https://localhost:44370/api/Sinhviens/post-by-obj"; // truyền bằng object
+            var httpClient = new HttpClient();
+            var obj = JsonConvert.SerializeObject(sv);
+            var response = await httpClient.PostAsJsonAsync(requestURL, sv); // lấy response
+            // Đọc từ response chuỗi Json là kết quả của phép trả về
+            if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
+                return RedirectToAction("Index");
+            }else return BadRequest(response);          
+        }
+        [HttpPost]
+        public async Task<ActionResult> Create2(Sinhvien sv)
+        {
+            // Cách dùng obj
+            Sinhvien sv2 = sv;
+            string requestURL =
+                @$"https://localhost:44370/api/Sinhviens/post-by-params?Name=Kiên"+
+                $"&Description=Tạch&Email={sv.Email}&PhoneNumber={sv.PhoneNumber}"+
+                $"&DoB={sv.DoB}&Address=Cay&Major={sv.Major}";
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(requestURL); // lấy response
+            // Đọc từ response chuỗi Json là kết quả của phép trả về
+            string apiData = await response.Content.ReadAsStringAsync();
+            // Có data rồi thì ta sẽ convert về dữ liệu mình cần để đưa sang view
+            if (response.IsSuccessStatusCode)
             {
-                return View();
+                return RedirectToAction("Index");
             }
+            else return BadRequest(response);
+        }
+        public async Task<ActionResult> Create2()
+        {
+            return View();
         }
 
         // GET: SinhvienController/Edit/5
@@ -100,9 +129,21 @@ namespace AppProgram_MVC.Controllers
         }
 
         // GET: SinhvienController/Delete/5
-        public ActionResult Delete(int id)
+        [HttpGet]
+        public async Task<ActionResult> Delete(Guid id)
         {
-            return View();
+            string requestURL =
+                $"https://localhost:44370/api/Sinhviens/{id}";
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(requestURL); // lấy response
+            // Đọc từ response chuỗi Json là kết quả của phép trả về
+            string apiData = await response.Content.ReadAsStringAsync();
+            // Có data rồi thì ta sẽ convert về dữ liệu mình cần để đưa sang view
+            if(response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index");
+            }else return BadRequest(response);
+            
         }
         
     }

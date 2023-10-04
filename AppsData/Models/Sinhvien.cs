@@ -21,7 +21,7 @@ namespace AppsData.Models
         public string Email { get; set; }
         [RegularExpression("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$")]
         public string PhoneNumber { get; set; }
-        [Required]
+
         public DateTime DoB { get; set; }
         public string Address { get; set; }
         public int Major { get; set; }
